@@ -1,0 +1,10 @@
+# Weight provenance and DIMER hosting
+
+- Upstream: `Salesforce/blip-vqa-base`
+- Immutable revision: `787b3d35d57e49572baabd22884b3d5a05acf072` (the Hub's `main` resolved to this commit on 2026-09-14)
+- Weight format: SafeTensors (`model.safetensors`, 1,538,800,584 bytes, float32). The upstream repository also hosts `pytorch_model.bin` (1,538,966,629 bytes, a pickle checkpoint that DIMER does not accept) and `tf_model.h5` (1,539,707,712 bytes, the TensorFlow port); this pipeline neither lists nor loads either — the executed artifact is the SafeTensors file only.
+- Manifest: `weights/blip-vqa-base/dimer-base-manifest.json` (8 files: `README.md`, `config.json`, `model.safetensors`, `preprocessor_config.json`, `special_tokens_map.json`, `tokenizer.json`, `tokenizer_config.json`, `vocab.txt`; 1,539,754,668 bytes total, per-file SHA-256)
+- Upstream weight license: BSD-3-Clause (the checkpoint's `README.md` front matter and the Hub's licence tag; the upstream code repository `salesforce/BLIP` carries the same licence)
+- DIMER hosting: BSD-3-Clause permits use, modification, distribution, and commercial use subject to preservation of the copyright notice and disclaimer and to not using the Salesforce name for endorsement. The Git repository does not vendor the checkpoint (`weights/**/*.safetensors` is git-ignored); DIMER may mirror the pinned snapshot in its model store under the upstream license.
+- Fresh clone: `stage_missing_files(allow_download=True)` fetches only the manifest-listed files absent on disk, at the pinned revision, into the snapshot directory; `verify_snapshot()` then checks every file before any load. `weights/**` is marked `-text` in `.gitattributes` so Windows `core.autocrlf` cannot rewrite the committed small files and break their digests.
+- Loader trust boundary: Transformers `BlipForQuestionAnswering` / `BlipProcessor` with `trust_remote_code=False`, `local_files_only=True` from the verified directory; the BERT tokenizer (`vocab.txt`, `tokenizer.json`) comes from the same snapshot; nothing model-related is fetched at construction or inference (the smoke run loaded and ran with `HF_HUB_OFFLINE=1`).
