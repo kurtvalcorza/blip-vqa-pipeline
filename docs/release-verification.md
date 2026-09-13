@@ -116,7 +116,7 @@ they are measurements for the stated runtime, not general estimates.
 
 | Date (UTC) | Commit / notebook blob | Executor | Path exercised | Wall | Outcome |
 |---|---|---|---|---|---|
-__LOCAL_ROW__
+| 2026-09-14 | notebook blob `81541d70ad87` (commit `43a1149`, generated at `430a3f3`; `NOTEBOOK_SOURCE.repository_revision` = `430a3f3…`) | Local Windows-venv harness (`run_nb_local.py`: nbclient 0.11.0, fresh `python3` kernel, `CUDA_VISIBLE_DEVICES=-1`, `DIMER_NOTEBOOK_CI_PREINSTALLED=1`), Python 3.12.10, torch 2.14.0+cu130, transformers 4.57.6 | Default synthetic path, all 8 code cells: pinned install skipped (pre-installed), `stage_missing_files` fetched all 8 manifest entries (1.54 GB) from the Hub cache at the pinned revision into the scratch `weights/`, `verify_snapshot` PASS (8 files), no further download in the log, seven `answer` calls → `red`, `1`, `sun`, `tree`, `blue`, `2`, `red` (2 tokens each, none truncated, 0.18–0.48 s), `evaluation_report` `sample-sanity` (`exact_match` 0.714 = 5/7, `anls` 0.714; the two recorded misses reproduced), scene digest `f217010b…`, 5 outputs written | 148.1 s | PASS — pre-flight only; not promotion evidence |
 
 ### Manual clean-runtime evidence
 
