@@ -7,7 +7,7 @@ date_published: "2022-12-12"
 date_published_source: "Hugging Face Hub repository creation date of the exact hosted checkpoint (`createdAt` 2022-12-12T17:51:53Z, https://huggingface.co/api/models/Salesforce/blip-vqa-base — the Transformers-format conversion); the BLIP paper and original checkpoints are from 2022-01 (arXiv:2201.12086), and the pinned revision is the Hub's `main` as of 2026-09-14"
 ---
 
-# BLIP VQA-base (DIMER package v0.1.0) — Visual Question Answering (Inference)
+# BLIP VQA-base — Visual Question Answering (Inference)
 
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Salesforce%2Fblip--vqa--base-ffcc4d?style=flat)](https://huggingface.co/Salesforce/blip-vqa-base)
 [![Upstream GitHub](https://img.shields.io/badge/Upstream%20GitHub-salesforce%2FBLIP-181717?style=flat&logo=github&logoColor=white)](https://github.com/salesforce/BLIP)
