@@ -2,6 +2,7 @@
 license: bsd-3-clause
 model_card_spec: "1.1"
 pipeline_tag: visual-question-answering
+task: "Others - Visual Question Answering"
 base_model: Salesforce/blip-vqa-base
 date_published: "2022-12-12"
 date_published_source: "Hugging Face Hub repository creation date of the exact hosted checkpoint (`createdAt` 2022-12-12T17:51:53Z, https://huggingface.co/api/models/Salesforce/blip-vqa-base — the Transformers-format conversion); the BLIP paper and original checkpoints are from 2022-01 (arXiv:2201.12086), and the pinned revision is the Hub's `main` as of 2026-09-14"
