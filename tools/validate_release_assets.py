@@ -1,6 +1,6 @@
 """Static release-asset validation for the BLIP VQA-base DIMER pipeline.
 
-Checks the STANDALONE tutorial notebook (DIMER Notebook Specification 2.0 §4), the tutorial
+Checks the STANDALONE tutorial notebook (DIMER Notebook Specification 2.2 §4), the tutorial
 registry, model card, README, STATUS.md and weight documentation for source conformance and
 cross-document identity consistency, and runs the generator parity checks (PAR1–PAR3).
 
@@ -46,7 +46,17 @@ CODE_MARKERS = (
     "image_paths = fetch_images(sorted(IMAGE_PINS), cache_dir='weights/vizwiz')",
     "splits = build_sample_dataset(annotations, seed=SPLIT_SEED, image_paths=image_paths)",
     "records = load_byod_dataset(records_file)",
-    "dataset_manifests = {name: validate_dataset(part) for name, part in splits.items()}",
+    "dataset_manifests = {name: validate_dataset(part, min_records=MIN_RECORDS if name == 'train' else 1) for name, part in splits.items()}",
+    # VQA-M5 / VQA-m5: BYOD path field, upload guards, fresh upload folder, guarded zip with limits, records-file message
+    "BYOD_PATH = ''",
+    "if len(uploaded) != 1:",
+    "shutil.rmtree(byod_root)",
+    "if len(members) > MAX_ZIP_MEMBERS or expanded > MAX_ZIP_BYTES:",
+    "if target == base or not target.is_relative_to(base):",
+    "records_file = find_records_file(byod_root, file_name)",
+    "splits = split_dataset(records, seed=SPLIT_SEED, base_dir=records_file.parent)",
+    # VQA-M2: the test split's category crossed with its majority answer
+    "test_majority = collections.Counter(",
     "disjoint = check_split_disjoint(splits)",
     "train_records, val_records, test_records = splits['train'], splits['validation'], splits['test']",
     "write_dataset_jsonl(splits['train'], 'outputs/blip_vqa_train.jsonl')",
@@ -58,27 +68,45 @@ CODE_MARKERS = (
     "'budget_respected': all(r['new_tokens'] <= ANSWER_MAX_TOKENS for r in results)",
     "frozen_scene = evaluation_report(results, golds, sample_kind='synthetic')",
     # Stage 6: two baselines and the frozen model on the test split, per category
-    "baseline_constant = constant_answer_baseline(test_records)",
+    # VQA-M5: the constant answer is the BYOD training majority under BYOD
+    "CONSTANT_ANSWER = prefix_table[''] if USE_BYOD else ABSTAIN_ANSWER",
+    "baseline_constant = constant_answer_baseline(test_records, answer=CONSTANT_ANSWER)",
     "baseline_prefix = question_prefix_baseline(train_records, test_records)",
     "frozen_test = pipe.evaluate(test_records, max_new_tokens=ANSWER_MAX_TOKENS)",
-    "frozen_fields = by_category(model_answer(pipe), test_records)",
+    "frozen_fields = by_category(lambda record: frozen_predictions[record['id']], test_records)",
+    # VQA-M4: Sections 5-7 start from the pretrained model; Section 6 refuses an adapted model
+    "def reset_to_pretrained():",
+    "    pipe = BlipVQAPipeline.from_pretrained(weights_dir=WEIGHTS_DIR)",
+    "if frozen_test['adapted']:",
+    # VQA-M2 / VQA-M3: the answerability breakdown, and comparisons printed rather than asserted
+    "frozen_answerability = answerability_breakdown(",
+    "'frozen_above_constant': {k: frozen_test[k] > baseline_constant[k] for k in METRICS}",
     # Stage 7: bounded fine-tuning with explicit hyperparameters
     "adapt_result = pipe.adapt(",
     "trainable_decoder_layers=TRAINABLE_DECODER_LAYERS",
     "lr=LEARNING_RATE",
-    # Stage 8: held-out evaluation, comparison, assertion
+    # Stage 8: held-out evaluation, comparison, answerability breakdown, verdict
     "adapted_test = pipe.evaluate(test_records, max_new_tokens=ANSWER_MAX_TOKENS)",
     "adapted_val = pipe.evaluate(val_records, max_new_tokens=ANSWER_MAX_TOKENS)",
     "'delta_vs_frozen'",
-    "assert adapted_test['vqa_accuracy'] > frozen_test['vqa_accuracy']",
+    "adapted_answerability = answerability_breakdown(",
+    "print({'what_the_gain_is_made_of': content_reading})",
+    "if adapt_result['best_epoch'] == 0:",
+    "run_history = globals().get('run_history', [])",
+    "'default_hyperparameters_chosen_on': 'a test split",
     # Stage 9: the scene re-answered, the per-image report, artifact, reload parity, provenance
     "adapted_scene = evaluation_report(adapted_results, golds, sample_kind='synthetic')",
     "pipe.save_artifact(artifact_dir, metadata=",
     "reloaded = BlipVQAPipeline.from_artifact(artifact_dir, weights_dir=WEIGHTS_DIR, device=pipe.device)",
-    "assert parity['identical_answers'] == parity['of']",
+    "raise RuntimeError(f'Reload parity failed: {parity}.",
     "weight_entry = next(entry for entry in MANIFEST['files'] if entry['path'] == WEIGHT_FILE)",
     "'weight_format': 'safetensors, digest-verified'",
-    "'corpus': {'name': CORPUS_NAME, 'repo': CORPUS_REPO, 'revision': CORPUS_REVISION, 'release': CORPUS_RELEASE, 'license': CORPUS_LICENSE, 'columns': list(CORPUS_COLUMNS), 'file': CORPUS_FILE, 'image_host': IMAGE_HOST, 'pinned_images': len(IMAGE_PINS)}",
+    "'corpus': None if USE_BYOD else {'name': CORPUS_NAME, 'repo': CORPUS_REPO, 'revision': CORPUS_REVISION, 'release': CORPUS_RELEASE, 'license': CORPUS_LICENSE, 'columns': list(CORPUS_COLUMNS), 'file': CORPUS_FILE, 'image_host': IMAGE_HOST, 'pinned_images': len(IMAGE_PINS)}",
+    "'byod': byod,",
+    "'answerability': answerability,",
+    "'adaptation': {'best_epoch': adapt_result['best_epoch']",
+    # VQA-m4: a provided cell for the question about written text
+    "sign_answer = pipe.answer(sign, SIGN_QUESTION, max_new_tokens=ANSWER_MAX_TOKENS)",
     "'model_revision': MODEL_REVISION",
     "'model_license': MODEL_LICENSE",
     "transformers.__version__",
@@ -97,9 +125,46 @@ MARKDOWN_MARKERS = (
     "**constant-answer baseline**",
     "**question-prefix baseline**",
     "**majority match**",
+    "**answerability breakdown**",
+    "**selected, optimistic** number rather than independent evidence",
+    "**Optimistic estimate:**",
+    "**no evidence of a lift on answerable questions**",
     "**no dispersion estimate**",
     "reading text in the image (BLIP-VQA is not an OCR or document model)",
     "**Snapshot note:** the pinned revision ships a fast `tokenizer.json`",
+)
+# Learner-facing text the review fixes removed; it must not come back (VQA-M1 restart/install text, VQA-M2 the
+# ungameable-majority-match and answerable-`other` readings, VQA-M3 the result assertion, VQA-M5 the wrong BYOD
+# minimum and the stale re-run instruction, VQA-m2 timings without an environment, VQA-m3 the untouched-test claim).
+STALE_MARKDOWN = (
+    "a dataset needs 8..5,000 records",
+    "installs the pinned dependencies",
+    "about ten minutes",
+    "the build record measured",
+    "which a constant answer cannot game",
+    "the metric a constant answer cannot game",
+    "the answerable `other` questions",
+    "The cell asserts the adapted VQA accuracy is above the frozen one",
+    "re-run from that cell",
+    "Restart the runtime, then rerun",
+    "the default is the smallest configuration that captured most of the gain",
+    "The test photographs were never used for training or epoch selection",
+)
+# The guided layer (NOTEBOOK_SPEC 2.2 §3.5, GDL1-GDL15; review VQA-M6): each marker with its minimum count.
+GUIDED_MARKERS = (
+    ("**Who this is for.**", 1),
+    ("**Input → Model → Output.**", 1),
+    ("**How to use this notebook.**", 1),
+    ("**Roadmap:**", 1),
+    ("**Predict before running:**", 7),
+    ("**What to notice:**", 7),
+    ("<summary>Check your reasoning</summary>", 8),
+    ("## 10. Your turn — change one thing", 1),
+    ("## 11. A question about written text", 1),
+    ("## Troubleshooting", 1),
+    ("## Glossary", 1),
+    ("## Conclusion (your notes)", 1),
+    ("> **Infrastructure.**", 3),
 )
 # Direct-library use that must stay inside the carried module cells (G2: the notebook calls the
 # pipeline API, it does not reimplement it). Checked on every code cell except the embedded ones.
@@ -128,10 +193,10 @@ FORBIDDEN_OUTSIDE_MODULE = (
 # ---------------------------------------------------------------------------
 # Shared checks. Everything below is source/structure validation only. Passing
 # these checks is NOT clean-runtime execution evidence under DIMER Notebook
-# Specification 2.0; see docs/release-verification.md for the release gate.
+# Specification 2.2; see docs/release-verification.md for the release gate.
 # ---------------------------------------------------------------------------
 
-NOTEBOOK_SPEC = "2.0"
+NOTEBOOK_SPEC = "2.2"
 ALLOWED_PROFILES = {"E2E", "ARTIFACT-INFERENCE", "TASK-INFERENCE", "MULTI-CAPABILITY", "SMOKE"}
 STATUS_TOKENS = ("Candidate", "Release-grade")
 PLACEHOLDER = re.compile(r"\b(TODO|TBD|FIXME)\b|Insert text here|Tooltip:", re.I)
@@ -624,8 +689,26 @@ def _validate_notebook_content(
     _check(not missing, f"{path.name}: missing required source markers: {missing}")
     present = [label for label, pattern in FORBIDDEN_PATTERNS if pattern.search(code)]
     _check(not present, f"{path.name}: forbidden/insecure source: {present}")
-    leaked = [marker for marker in FORBIDDEN_OUTSIDE_MODULE if marker in outside]
+    # The kernel install cell downloads the pinned uv wheel and verifies its size and SHA-256 (VQA-M1); it is the only
+    # cell outside the carried modules allowed to use urllib.request.
+    kernel = {index for index, source, _tree in code_cells if "# dimer: kernel cell" in source}
+    learner = "\n".join(text for index, text in stripped.items() if index not in embedded and index not in kernel)
+    kernel_raw = [source for index, source, _tree in code_cells if index in kernel]
+    leaked = [marker for marker in FORBIDDEN_OUTSIDE_MODULE if marker in learner]
+    leaked += [m for m in FORBIDDEN_OUTSIDE_MODULE if m != "urllib.request" and any(m in _strip_comments(k) for k in kernel_raw)]
     _check(not leaked, f"{path.name}: direct library use outside the carried module cell (G2): {leaked}")
+    _check(len(kernel) == 2, f"{path.name}: exactly two kernel cells (isolated install and router) are expected (VQA-M1)")
+    install = next((k for k in kernel_raw if "LOCK_TEXT = r" in k), "")
+    for needed in ("'--managed-python'", "'--require-hashes'", "'--only-binary'", "':all:'", "UV_SHA256", "LOCK_SHA256", "platform.machine() != 'x86_64'"):
+        _check(needed.replace("'", '"') in install, f"{path.name}: the isolated install cell must use {needed} (VQA-M1)")
+    _check("_ip.input_transformers_cleanup.append(_route_to_isolated_runtime)" in "\n".join(kernel_raw), f"{path.name}: later cells must be routed to the isolated environment (VQA-M1)")
+    stale = [marker for marker in STALE_MARKDOWN if marker in markdown]
+    _check(not stale, f"{path.name}: stale learner-facing text: {stale}")
+    _check("{{" not in markdown and "}}" not in markdown, f"{path.name}: markdown must not show doubled braces (VQA-m1)")
+    _check("@@" not in markdown, f"{path.name}: unfilled worked-answer placeholder in markdown")
+    _check("\nassert " not in "\n" + learner, f"{path.name}: learner cells must not use a bare assert (VQA-M3)")
+    short = [(marker, markdown.count(marker), least) for marker, least in GUIDED_MARKERS if markdown.count(marker) < max(least, 1)]
+    _check(not short, f"{path.name}: guided layer incomplete (marker, found, needed): {short}")
     _check(
         f"pipe = {MODEL_LOAD_EXPR}" in outside,
         f"{path.name}: must load through {MODEL_LOAD_EXPR} (INF1)",
