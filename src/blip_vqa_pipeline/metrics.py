@@ -18,6 +18,7 @@ from typing import Any
 from .pipeline import anls, exact_match, normalize_answer, vqa_accuracy
 
 PREFIX_WORDS = 2
+ABSTAIN_ANSWER = "unanswerable"
 METRIC_DEFINITIONS = {
     "vqa_accuracy": (
         "mean over questions of min(number of accepted answers the normalised prediction equals / 3, 1) — "
@@ -108,3 +109,54 @@ def question_prefix_baseline(
     result = vqa_metrics(predictions, _golds(records))
     result["baseline"] = f"question-prefix majority ({len(table) - 1} prefixes seen in training)"
     return result
+
+
+def _group_stats(rows: Sequence[tuple[str, list[str]]], abstain: str) -> dict[str, Any]:
+    n = len(rows)
+    abstained = [(p, g) for p, g in rows if normalize_answer(p) == abstain]
+    content = [(p, g) for p, g in rows if normalize_answer(p) != abstain]
+    return {
+        "n": n,
+        "abstain_share": len(abstained) / n,
+        "vqa_accuracy": sum(vqa_accuracy(p, g) for p, g in rows) / n,
+        "vqa_from_abstain": sum(vqa_accuracy(p, g) for p, g in abstained) / n,
+        "content_n": len(content),
+        "content_vqa_accuracy": (
+            sum(vqa_accuracy(p, g) for p, g in content) / len(content) if content else None
+        ),
+    }
+
+
+def answerability_breakdown(
+    predictions: Sequence[str],
+    records: Sequence[Mapping[str, Any]],
+    *,
+    abstain: str = ABSTAIN_ANSWER,
+) -> dict[str, Any]:
+    """How much of a VQA score comes from answering `abstain` (VizWiz's `unanswerable`).
+
+    For the whole set, per `category` and per majority-answer group (questions whose majority answer is
+    `abstain` vs the rest), it reports the share of `abstain` predictions, mean VQA accuracy, the part of that
+    mean earned by the `abstain` predictions (`vqa_from_abstain`, so `vqa_accuracy - vqa_from_abstain` is the
+    part earned by content answers), and the mean VQA accuracy over the content answers alone
+    (`content_vqa_accuracy`, None when every prediction is `abstain`). A system that learns to answer
+    `abstain` often can raise VQA accuracy on a category without answering any of its questions better; this
+    breakdown separates the two (review VQA-M2)."""
+    if len(predictions) != len(records):
+        raise ValueError(f"{len(predictions)} predictions but {len(records)} records")
+    if not predictions:
+        raise ValueError("no predictions to score")
+    word = normalize_answer(abstain)
+    rows = [(str(p), _golds([r])[0], r) for p, r in zip(predictions, records, strict=True)]
+    categories: dict[str, list[tuple[str, list[str]]]] = {}
+    majority: dict[str, list[tuple[str, list[str]]]] = {}
+    for prediction, golds, record in rows:
+        categories.setdefault(str(record.get("category", "byod")), []).append((prediction, golds))
+        group = f"majority {word}" if majority_answer(golds) == word else f"majority not {word}"
+        majority.setdefault(group, []).append((prediction, golds))
+    return {
+        "abstain_answer": word,
+        "overall": _group_stats([(p, g) for p, g, _ in rows], word),
+        "by_category": {name: _group_stats(part, word) for name, part in sorted(categories.items())},
+        "by_majority_answer": {name: _group_stats(part, word) for name, part in sorted(majority.items())},
+    }

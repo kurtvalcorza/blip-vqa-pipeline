@@ -1,8 +1,10 @@
 """DIMER inference and fine-tuning package for the pinned ``Salesforce/blip-vqa-base`` checkpoint."""
 
 from .metrics import (
+    ABSTAIN_ANSWER,
     METRIC_DEFINITIONS,
     PREFIX_WORDS,
+    answerability_breakdown,
     constant_answer_baseline,
     majority_answer,
     question_prefix,
@@ -57,10 +59,13 @@ from .samples import (
     MAX_RECORDS,
     MIN_ANSWERS,
     MIN_RECORDS,
+    MIN_TEST_RECORDS,
+    MIN_VAL_RECORDS,
     SAMPLE_SEED,
     SAMPLE_SIZE,
     SAMPLE_SPLIT,
     build_sample_dataset,
+    byod_minimum_records,
     check_split_disjoint,
     column_digest,
     dataset_digest,
@@ -75,6 +80,7 @@ from .samples import (
 )
 
 __all__ = [
+    "ABSTAIN_ANSWER",
     "ANLS_THRESHOLD",
     "ARTIFACT_FORMAT",
     "CORPUS_COLUMNS",
@@ -103,6 +109,8 @@ __all__ = [
     "MIN_IMAGE_SIDE",
     "MIN_RECORDS",
     "MIN_SCORED_RECORDS",
+    "MIN_TEST_RECORDS",
+    "MIN_VAL_RECORDS",
     "MODEL_ID",
     "MODEL_KEY",
     "MODEL_LICENSE",
@@ -117,7 +125,9 @@ __all__ = [
     "WEIGHT_SHA256",
     "BlipVQAPipeline",
     "anls",
+    "answerability_breakdown",
     "build_sample_dataset",
+    "byod_minimum_records",
     "check_split_disjoint",
     "column_digest",
     "constant_answer_baseline",

@@ -65,8 +65,9 @@ def _answers(pipe, records):
     return out
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def pipe():
+    # A fresh base per test: adapt() refuses an already-adapted pipeline (review VQA-M4).
     return BlipVQAPipeline.from_pretrained(device="cpu")
 
 

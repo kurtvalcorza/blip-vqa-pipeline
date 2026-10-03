@@ -63,6 +63,11 @@ SAMPLE_SPLIT = {"train": 140, "validation": 40, "test": 60}
 MIN_RECORDS = 8
 MAX_RECORDS = 5_000
 MIN_ANSWERS = 1
+# BYOD: the notebook selects the epoch on validation and scores and reload-checks the test split, so a split
+# dataset needs at least this many validation and test records besides MIN_RECORDS training records
+# (review VQA-M5).
+MIN_VAL_RECORDS = 2
+MIN_TEST_RECORDS = 2
 FETCH_RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
 FETCH_MAX_ATTEMPTS = 6
 FETCH_SPACING_SECONDS = 0.25
@@ -653,10 +658,13 @@ def split_dataset(
 ) -> dict[str, list[dict[str, Any]]]:
     """Seeded split of a BYOD dataset into train/validation/test **by image**: every question on the same
     image
-    lands in the same split, so a test image is never seen in training."""
+    lands in the same split, so a test image is never seen in training.
+
+    The split must leave at least MIN_RECORDS training, MIN_VAL_RECORDS validation and MIN_TEST_RECORDS test
+    records; a refusal names the split, its count and the real minimum (`byod_minimum_records`)."""
     if not (0.0 <= val_fraction < 1.0 and 0.0 < test_fraction < 1.0 and val_fraction + test_fraction < 1.0):
         raise ValueError("fractions must satisfy 0 <= val < 1, 0 < test < 1, val + test < 1")
-    checked = validate_dataset(records, base_dir=base_dir)["records"]
+    checked = validate_dataset(records, min_records=1, base_dir=base_dir)["records"]
     groups: dict[str, list[dict[str, Any]]] = {}
     for record in checked:
         groups.setdefault(record["image_id"], []).append(record)
@@ -672,11 +680,33 @@ def split_dataset(
             splits["validation"].extend(group)
         else:
             splits["train"].extend(group)
-    if len(splits["train"]) < MIN_RECORDS:
+    needed = {"train": MIN_RECORDS, "validation": MIN_VAL_RECORDS, "test": MIN_TEST_RECORDS}
+    short = {name: len(splits[name]) for name, least in needed.items() if len(splits[name]) < least}
+    if short:
+        name, have = next(iter(short.items()))
+        try:
+            least = (
+                f"a dataset of one question per image needs at least "
+                f"{byod_minimum_records(val_fraction, test_fraction)} records"
+            )
+        except ValueError:
+            least = "no dataset size gives every split its minimum at these fractions"
         raise ValueError(
-            f"split leaves {len(splits['train'])} training records; at least {MIN_RECORDS} are required"
+            f"the {name} split has {have} records (at least {needed[name]} are required): "
+            f"{len(checked)} records on {len(groups)} images split by image into train/validation/test as "
+            f"{len(splits['train'])}/{len(splits['validation'])}/{len(splits['test'])}; {least}. Add records"
         )
     return splits
+
+
+def byod_minimum_records(val_fraction: float = 0.15, test_fraction: float = 0.2) -> int:
+    """Smallest dataset (one question per image) that `split_dataset` accepts at these fractions."""
+    for n in range(1, MAX_RECORDS + 1):
+        n_test = max(1, round(n * test_fraction))
+        n_val = round(n * val_fraction)
+        if n_test >= MIN_TEST_RECORDS and n_val >= MIN_VAL_RECORDS and n - n_test - n_val >= MIN_RECORDS:
+            return n
+    raise ValueError("no dataset within MAX_RECORDS satisfies the split")
 
 
 def load_byod_dataset(path: str | Path) -> list[dict[str, Any]]:
