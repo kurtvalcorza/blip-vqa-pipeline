@@ -1,0 +1,107 @@
+[colab] Parsing notebook '/home/kurt/colab-runs/blip-vqa-pipeline-a11f272-c6b089/blip_vqa_colab_a11f272_colab-cli-t4.ipynb'...
+[colab] Executing cell 1/14 - Infrastructure: install the locked runtime into an isolated environment...
+{'isolated_environment': '/content/dimer_isolated_env', 'isolated_python': '3.12.12', 'kernel_python': '3.13.15', 'locked_packages': 48, 'setup_seconds': 58}
+[colab] Executing cell 2/14 - Route the remaining cells to the isolated environment...
+Every later code cell now runs in /content/dimer_isolated_env/bin/python (pid 2393).
+[colab] Executing cell 3/14 - blip_vqa-07...
+{'notebook_source': {'repository': 'blip-vqa-pipeline', 'repository_revision': '471ad9971cb046a2b879d57311b338d066c25b2c', 'embedded_module': 'src/blip_vqa_pipeline/pipeline.py', 'embedded_modules': ['src/blip_vqa_pipeline/pipeline.py', 'src/blip_vqa_pipeline/metrics.py', 'src/blip_vqa_pipeline/samples.py'], 'module_sha256': 'ccda3b2783bbd810120f57974f9d6659e4ca515856341f852be0ab238661d6e1', 'generator': 'build_notebook.py/2.1', 'notebook_spec': '2.2'}, 'python': '3.12.12', 'torch': '2.14.0+cu130', 'transformers': '4.57.6', 'cuda': True}
+[colab] Executing cell 4/14 - blip_vqa-09...
+[colab] Executing cell 5/14 - blip_vqa-11...
+[colab] Executing cell 6/14 - blip_vqa-13...
+[colab] Executing cell 7/14 - blip_vqa-15...
+{'model_id': 'Salesforce/blip-vqa-base', 'revision': '787b3d35d57e49572baabd22884b3d5a05acf072', 'license': 'bsd-3-clause', 'files': 8, 'total_bytes': 1539754668}
+{'weights_dir': '/content/weights/blip-vqa-base', 'fetched': ['README.md', 'config.json', 'model.safetensors', 'preprocessor_config.json', 'special_tokens_map.json', 'tokenizer.json', 'tokenizer_config.json', 'vocab.txt']}
+{'verified_files': 8, 'revision': '787b3d35d57e49572baabd22884b3d5a05acf072'}
+Using a slow image processor as `use_fast` is unset and a slow processor was saved with this model. `use_fast=True` will be the default behavior in v4.52, even if the model was saved with a slow processor. This will result in minor differences in outputs. You'll still be able to use a slow processor with `use_fast=False`.
+{'device': 'cuda:0', 'source': 'local-snapshot'}
+[colab] Executing cell 8/14 - blip_vqa-17...
+{'data_source': 'VizWiz-VQA VizWiz-VQA v1 (2018) as mirrored on the Hugging Face Hub, dataset revision d428a2da (2024-03-08) (CC BY 4.0 (Gurari et al. 2018; vizwiz.org/tasks-and-datasets/vqa))', 'raw_rows': {'annotations': 864, 'photographs': 240}, 'splits': {'train': 140, 'validation': 40, 'test': 60}, 'column_sha256': '00b476ddd96ff74e...', 'pinned_photographs': 240}
+{'train': {'n': 140, 'unique_images': 140, 'categories': {'yes/no': 11, 'other': 52, 'unanswerable': 75, 'number': 2}, 'answers_per_question': {'min': 10, 'max': 10}, 'digest': 'eca37533324e4a52...'}}
+{'validation': {'n': 40, 'unique_images': 40, 'categories': {'unanswerable': 20, 'yes/no': 2, 'other': 18}, 'answers_per_question': {'min': 10, 'max': 10}, 'digest': 'cd46effd978462a3...'}}
+{'test': {'n': 60, 'unique_images': 60, 'categories': {'other': 33, 'unanswerable': 22, 'yes/no': 5}, 'answers_per_question': {'min': 10, 'max': 10}, 'digest': '3694b15d1d66519d...'}}
+{'test_split_category_x_majority_answer': {'other / majority other answer': 20, 'other / majority unanswerable': 13, 'unanswerable / majority unanswerable': 22, 'yes/no / majority other answer': 5}}
+{'example': {'id': 'train-0000', 'image': 'VizWiz_val_00000184.jpg', 'size': [968, 1296], 'question': 'Is it more in focus now?', 'answers': ['unanswerable', 'no', 'no', 'yes', 'no', 'blurry', 'yes', 'unanswerable', 'no', 'no'], 'majority_answer': 'no', 'category': 'yes/no'}}
+{'probe': 'duplicate id', 'rejected': "duplicate id 'same'"}
+{'probe': 'missing image file', 'rejected': 'records[0]: image file not found: work/does-not-exist.jpg'}
+{'probe': 'empty answer list', 'rejected': 'records[0]: answers must be a list of at least 1 accepted answer(s)'}
+{'probe': 'too small', 'rejected': '3 records; 8..5000 are required'}
+[colab] Executing cell 9/14 - blip_vqa-19...
+{'MIN_IMAGE_SIDE': 16, 'MAX_IMAGE_SIDE': 4096, 'IMAGE_SIZE': 384, 'MAX_QUESTION_CHARS': 256, 'MAX_NEW_TOKENS': 32, 'DEFAULT_MAX_NEW_TOKENS': 10, 'DECODING': 'greedy', 'MIN_RECORDS': 8, 'MAX_RECORDS': 5000, 'MIN_ANSWERS': 1}
+{'scene': 'synthetic_scene_640x480.png', 'size': (640, 480), 'rgb_sha256': 'f217010b24892234...', 'manifest_verdict': 'accepted', 'findings': 1}
+Q: what color is the house?
+   A: 'red'  (2 tokens)
+Q: how many houses are there?
+   A: '1'  (2 tokens)
+Q: what is the yellow object?
+   A: 'sun'  (2 tokens)
+Q: what is next to the house?
+   A: 'tree'  (2 tokens)
+Q: what color is the sky?
+   A: 'blue'  (2 tokens)
+Q: how many trees are there?
+   A: '2'  (2 tokens)
+Q: what color is the door?
+   A: 'red'  (2 tokens)
+{'checks': {'one_result_per_question': True, 'answers_are_text': True, 'budget_respected': True, 'setting_echoed': True}, 'frozen_scene': {'exact_match': 0.714, 'anls': 0.714}, 'verdict': 'sample-sanity', 'any_truncated': False}
+[colab] Executing cell 10/14 - blip_vqa-21...
+{'constant_answer_baseline': {'vqa_accuracy': 0.683, 'exact_match': 0.783, 'majority_match': 0.583, 'anls': 0.783}, 'n': 60, 'answer': 'unanswerable', 'why': 'VizWiz convention for a photograph that cannot be answered'}
+{'question_prefix_baseline': {'vqa_accuracy': 0.622, 'exact_match': 0.717, 'majority_match': 0.567, 'anls': 0.717}, 'note': 'question-prefix majority (53 prefixes seen in training)'}
+{'frozen_model_test': {'vqa_accuracy': 0.239, 'exact_match': 0.333, 'majority_match': 0.167, 'anls': 0.353}, 'n': 60, 'verdict': 'measured', 'adapted': False, 'seconds': 8.3}
+{'frozen_above_constant': {'vqa_accuracy': False, 'exact_match': False, 'majority_match': False, 'anls': False}, 'frozen_above_prefix': {'vqa_accuracy': False, 'exact_match': False, 'majority_match': False, 'anls': False}}
+{'definitions': {'vqa_accuracy': 'mean over questions of min(number of accepted answers the normalised prediction equals / 3, 1) — the VQA v2 / VizWiz convention with ten human answers per question; in 0..1', 'exact_match': 'fraction of questions whose normalised prediction equals any normalised accepted answer; in 0..1', 'anls': 'mean over questions of the Average Normalised Levenshtein Similarity between the prediction and its best-matching accepted answer (a similarity below 0.5 scores 0); in 0..1', 'majority_match': "fraction of questions whose normalised prediction equals the question's majority answer (the most frequent of its accepted answers) — stricter than exact_match on VizWiz, where `unanswerable` sits among the ten answers of most questions; in 0..1"}}
+{'by_category': {'constant': {'other': {'n': 33, 'vqa_accuracy': 0.485}, 'unanswerable': {'n': 22, 'vqa_accuracy': 1.0}, 'yes/no': {'n': 5, 'vqa_accuracy': 0.6}}, 'prefix': {'other': {'n': 33, 'vqa_accuracy': 0.465}, 'unanswerable': {'n': 22, 'vqa_accuracy': 0.909}, 'yes/no': {'n': 5, 'vqa_accuracy': 0.4}}, 'frozen': {'other': {'n': 33, 'vqa_accuracy': 0.232}, 'unanswerable': {'n': 22, 'vqa_accuracy': 0.076}, 'yes/no': {'n': 5, 'vqa_accuracy': 1.0}}}}
+{'frozen_says_unanswerable': 0.0}
+{'frozen': 'other', 'n': 33, 'says_unanswerable': 0.0, 'vqa_accuracy': 0.232, 'vqa_from_unanswerable': 0.0, 'content_answers': 33, 'content_vqa_accuracy': 0.232}
+{'frozen': 'unanswerable', 'n': 22, 'says_unanswerable': 0.0, 'vqa_accuracy': 0.076, 'vqa_from_unanswerable': 0.0, 'content_answers': 22, 'content_vqa_accuracy': 0.076}
+{'frozen': 'yes/no', 'n': 5, 'says_unanswerable': 0.0, 'vqa_accuracy': 1.0, 'vqa_from_unanswerable': 0.0, 'content_answers': 5, 'content_vqa_accuracy': 1.0}
+{'frozen': 'majority not unanswerable', 'n': 25, 'says_unanswerable': 0.0, 'vqa_accuracy': 0.453, 'vqa_from_unanswerable': 0.0, 'content_answers': 25, 'content_vqa_accuracy': 0.453}
+{'frozen': 'majority unanswerable', 'n': 35, 'says_unanswerable': 0.0, 'vqa_accuracy': 0.086, 'vqa_from_unanswerable': 0.0, 'content_answers': 35, 'content_vqa_accuracy': 0.086}
+{'category': 'other', 'question': 'What is the person doing?', 'frozen': 'working', 'gold': ['looking at computer screen', 'watching computer screen', 'working on computer', 'looking at computer']}
+{'category': 'other', 'question': 'In this photo here is it showing me or the back facing camera? If its ', 'frozen': 'back', 'gold': ['showing computer but super blurry', 'unanswerable', 'back', 'unanswerable']}
+{'category': 'other', 'question': 'What is on this piece of paper? Thank you.', 'frozen': 'price', 'gold': ['sales ad', 'coupon', 'sales ads', 'store advertisement for clothing laser rangefinder arrows']}
+[colab] Executing cell 11/14 - blip_vqa-23...
+{'epoch': 0, 'train_loss': None, 'val_vqa_accuracy': 0.167, 'val_exact_match': 0.275, 'val_majority_match': 0.1, 'val_anls': 0.288, 'note': 'frozen model'}
+{'epoch': 1, 'train_loss': 1.3674, 'val_vqa_accuracy': 0.683, 'val_exact_match': 0.775, 'val_majority_match': 0.55, 'val_anls': 0.788}
+{'epoch': 2, 'train_loss': 0.7684, 'val_vqa_accuracy': 0.783, 'val_exact_match': 0.875, 'val_majority_match': 0.65, 'val_anls': 0.875}
+{'epoch': 3, 'train_loss': 0.4797, 'val_vqa_accuracy': 0.758, 'val_exact_match': 0.9, 'val_majority_match': 0.625, 'val_anls': 0.9}
+{'epoch': 4, 'train_loss': 0.2706, 'val_vqa_accuracy': 0.775, 'val_exact_match': 0.85, 'val_majority_match': 0.675, 'val_anls': 0.85}
+{'trainable_parameters': 19526204, 'total_parameters': 361230140, 'best_epoch': 2, 'selection': 'highest validation VQA accuracy', 'selection_split': 'validation', 'seconds': 51.3}
+[colab] Executing cell 12/14 - blip_vqa-25...
+{'vqa_accuracy': {'constant': 0.683, 'prefix': 0.622, 'frozen': 0.239, 'adapted': 0.728}}
+{'exact_match': {'constant': 0.783, 'prefix': 0.717, 'frozen': 0.333, 'adapted': 0.817}}
+{'majority_match': {'constant': 0.583, 'prefix': 0.567, 'frozen': 0.167, 'adapted': 0.667}}
+{'anls': {'constant': 0.783, 'prefix': 0.717, 'frozen': 0.353, 'adapted': 0.817}}
+{'delta_vs_frozen': {'vqa_accuracy': 0.489, 'exact_match': 0.483, 'majority_match': 0.5, 'anls': 0.464}}
+{'by_category': {'other': {'n': 33, 'constant': 0.485, 'prefix': 0.465, 'frozen': 0.232, 'adapted': 0.566}, 'unanswerable': {'n': 22, 'constant': 1.0, 'prefix': 0.909, 'frozen': 0.076, 'adapted': 0.909}, 'yes/no': {'n': 5, 'constant': 0.6, 'prefix': 0.4, 'frozen': 1.0, 'adapted': 1.0}}}
+{'answerability': 'overall', 'frozen_says_unanswerable': 0.0, 'adapted_says_unanswerable': 0.733, 'adapted_vqa_from_unanswerable': 0.578, 'adapted_vqa_from_content': 0.15}
+{'answerability': 'other', 'n': 33, 'constant_vqa': 0.485, 'frozen_vqa': 0.232, 'adapted_vqa': 0.566, 'adapted_says_unanswerable': 0.697, 'adapted_vqa_from_unanswerable': 0.414, 'frozen_content_vqa': 0.232, 'adapted_content_vqa': 0.5, 'adapted_content_answers': 10}
+{'answerability': 'unanswerable', 'n': 22, 'constant_vqa': 1.0, 'frozen_vqa': 0.076, 'adapted_vqa': 0.909, 'adapted_says_unanswerable': 0.909, 'adapted_vqa_from_unanswerable': 0.909, 'frozen_content_vqa': 0.076, 'adapted_content_vqa': 0.0, 'adapted_content_answers': 2}
+{'answerability': 'yes/no', 'n': 5, 'constant_vqa': 0.6, 'frozen_vqa': 1.0, 'adapted_vqa': 1.0, 'adapted_says_unanswerable': 0.2, 'adapted_vqa_from_unanswerable': 0.2, 'frozen_content_vqa': 1.0, 'adapted_content_vqa': 1.0, 'adapted_content_answers': 4}
+{'answerability': 'majority not unanswerable', 'n': 25, 'constant_vqa': 0.267, 'frozen_vqa': 0.453, 'adapted_vqa': 0.48, 'adapted_says_unanswerable': 0.48, 'adapted_vqa_from_unanswerable': 0.133, 'frozen_content_vqa': 0.453, 'adapted_content_vqa': 0.667, 'adapted_content_answers': 13}
+{'answerability': 'majority unanswerable', 'n': 35, 'constant_vqa': 0.981, 'frozen_vqa': 0.086, 'adapted_vqa': 0.905, 'adapted_says_unanswerable': 0.914, 'adapted_vqa_from_unanswerable': 0.895, 'frozen_content_vqa': 0.086, 'adapted_content_vqa': 0.111, 'adapted_content_answers': 3}
+{'category': 'other', 'question': 'What is the person doing?', 'frozen': 'working', 'adapted': 'working', 'gold': ['looking at computer screen', 'watching computer screen', 'working on computer', 'looking at computer']}
+{'category': 'other', 'question': 'In this photo here is it showing me or the back facing camera? If its ', 'frozen': 'back', 'adapted': 'unanswerable', 'gold': ['showing computer but super blurry', 'unanswerable', 'back', 'unanswerable']}
+{'category': 'other', 'question': 'What is on this piece of paper? Thank you.', 'frozen': 'price', 'adapted': 'unanswerable', 'gold': ['sales ad', 'coupon', 'sales ads', 'store advertisement for clothing laser rangefinder arrows']}
+{'best_epoch': 2, 'verdict': 'improved: the adapted test VQA accuracy is 0.489 above the frozen one (optimistic for the default settings, which were compared on a test split)'}
+{'what_the_gain_is_made_of': {'adapted_says_unanswerable': 0.733, 'vqa_on_majority_content_questions': {'n': 25, 'constant_vqa': 0.267, 'frozen_vqa': 0.453, 'adapted_vqa': 0.48}, 'content_answers_vqa': {'frozen': 0.453, 'adapted': 0.667, 'frozen_all_questions': 0.239, 'adapted_all_questions': 0.562}}}
+run   data layers epochs       lr best  frozen adapted   delta  unans. answerable
+  1 sample      2      4    5e-05    2   0.239   0.728   0.489   0.733      0.480
+{'report': 'outputs/blip_vqa_evaluation_report.json'}
+[colab] Executing cell 13/14 - blip_vqa-27...
+{'question': 'what color is the house?', 'frozen': 'red', 'adapted': 'red', 'gold': ['red']}
+{'question': 'how many houses are there?', 'frozen': '1', 'adapted': '1', 'gold': ['1', 'one']}
+{'question': 'what is the yellow object?', 'frozen': 'sun', 'adapted': 'sun', 'gold': ['sun', 'the sun']}
+{'question': 'what is next to the house?', 'frozen': 'tree', 'adapted': 'tree', 'gold': ['tree', 'a tree']}
+{'question': 'what color is the sky?', 'frozen': 'blue', 'adapted': 'blue', 'gold': ['blue']}
+{'question': 'how many trees are there?', 'frozen': '2', 'adapted': '2', 'gold': ['1', 'one']}
+{'question': 'what color is the door?', 'frozen': 'red', 'adapted': 'red', 'gold': ['brown', 'dark brown']}
+{'scene_after_adaptation': {'exact_match': 0.714, 'anls': 0.714}, 'verdict': 'sample-sanity'}
+{'artifact': 'outputs/blip_vqa_adapter', 'format': 'org.valcorza.blip-vqa-base.adapter.v1', 'tensors': 57, 'bytes': 78112280, 'sha256': '819ea7c0d6e8ec0f...', 'best_epoch': 2}
+{'reload_parity': {'identical_answers': 8, 'of': 8}, 'reloaded_best_epoch': 2}
+['blip_vqa_adapter', 'blip_vqa_answers.csv', 'blip_vqa_evaluation_report.json', 'blip_vqa_input_manifest.json', 'blip_vqa_result.json', 'blip_vqa_train.jsonl']
+[colab] Executing cell 14/14 - blip_vqa-29...
+<PIL.Image.Image image mode=RGB size=480x320 at 0x7C5258372D20>
+
+[Image saved to: /tmp/tmpz63nrmy2.png]
+{'sign_text': 'EXIT', 'question': 'what is written on the sign?', 'answer': 'exit', 'model': 'adapted', 'read_correctly': True}
+[colab] Saving notebook with outputs to '/home/kurt/colab-runs/blip-vqa-pipeline-a11f272-c6b089/blip_vqa_colab_a11f272_colab-cli-t4_output.ipynb'...
