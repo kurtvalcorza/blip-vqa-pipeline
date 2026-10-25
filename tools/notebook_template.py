@@ -986,7 +986,7 @@ TEMPLATE = {
         "Available: https://github.com/kurtvalcorza/blip-vqa-pipeline/blob/main/MODEL_CARD.md; "
         "https://github.com/kurtvalcorza/blip-vqa-pipeline/blob/main/README.md; "
         "https://github.com/kurtvalcorza/blip-vqa-pipeline/blob/main/docs/WEIGHTS.md\n\n"
-        "[7] DIMER Notebook Specification 2.2 and Model Card Specification 1.1, fleet specifications in the ml-worker "
+        "[7] DIMER Notebook Specification 2.5 and Model Card Specification 1.1, fleet specifications in the ml-worker "
         "repository."
     ),
 }
