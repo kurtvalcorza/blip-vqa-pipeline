@@ -128,7 +128,7 @@ MARKDOWN_MARKERS = (
     "**answerability breakdown**",
     "**selected, optimistic** number rather than independent evidence",
     "**Optimistic estimate:**",
-    "**no evidence of a lift on answerable questions**",
+    "**no clear evidence of better answers to answerable questions**",
     "**no dispersion estimate**",
     "reading text in the image (BLIP-VQA is not an OCR or document model)",
     "**Snapshot note:** the pinned revision ships a fast `tokenizer.json`",
@@ -269,7 +269,7 @@ COMMON_MARKDOWN_MARKERS = (
     "without the repository being",
     "It does **not** establish benchmark superiority",
     "## References",
-    f"- Repository model card: https://github.com/kurtvalcorza/{REPO_NAME}/blob/main/MODEL_CARD.md",
+    f"Available: https://github.com/kurtvalcorza/{REPO_NAME}/blob/main/MODEL_CARD.md",
 )
 # Patterns that must never appear in tutorial code (comment-stripped), in any cell.
 FORBIDDEN_PATTERNS = (
