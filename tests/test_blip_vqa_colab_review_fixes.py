@@ -313,7 +313,13 @@ def test_learner_text_does_not_teach_the_unsupported_reading():
     markdown = _markdown()
     for stale in ("which a constant answer cannot game", "the metric a constant answer cannot game", "the answerable `other` questions", "lifts the answerable `other` questions"):
         assert stale not in markdown, stale
-    assert "**no evidence of a lift on answerable questions**" in markdown and "**answerability breakdown**" in markdown
+    assert "**no clear evidence of better answers to answerable questions**" in markdown and "**answerability breakdown**" in markdown
+    # Tier C T9-2: no numbers from the previous version's CPU answer log; T9-3: content-only accuracy flagged as biased.
+    for stale in ("(0.108)", "0.204", "41 of 56", "Only the last two say whether"):
+        assert stale not in markdown, stale
+    assert "The last is **not** like-for-like" in markdown
+    # Tier C T9-6 (DAT9): the overlap statement is inferred, not absolute.
+    assert "the model never saw" not in markdown and "overlap cannot be ruled out" in markdown
     assert "@@" not in markdown
 
 

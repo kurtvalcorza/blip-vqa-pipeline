@@ -1,6 +1,6 @@
 """Static release-asset validation for the BLIP VQA-base DIMER pipeline.
 
-Checks the STANDALONE tutorial notebook (DIMER Notebook Specification 2.2 §4), the tutorial
+Checks the STANDALONE tutorial notebook (DIMER Notebook Specification 2.5 §4), the tutorial
 registry, model card, README, STATUS.md and weight documentation for source conformance and
 cross-document identity consistency, and runs the generator parity checks (PAR1–PAR3).
 
@@ -128,7 +128,7 @@ MARKDOWN_MARKERS = (
     "**answerability breakdown**",
     "**selected, optimistic** number rather than independent evidence",
     "**Optimistic estimate:**",
-    "**no evidence of a lift on answerable questions**",
+    "**no clear evidence of better answers to answerable questions**",
     "**no dispersion estimate**",
     "reading text in the image (BLIP-VQA is not an OCR or document model)",
     "**Snapshot note:** the pinned revision ships a fast `tokenizer.json`",
@@ -196,7 +196,7 @@ FORBIDDEN_OUTSIDE_MODULE = (
 # Specification 2.2; see docs/release-verification.md for the release gate.
 # ---------------------------------------------------------------------------
 
-NOTEBOOK_SPEC = "2.2"
+NOTEBOOK_SPEC = "2.5"
 ALLOWED_PROFILES = {"E2E", "ARTIFACT-INFERENCE", "TASK-INFERENCE", "MULTI-CAPABILITY", "SMOKE"}
 STATUS_TOKENS = ("Candidate", "Release-grade")
 PLACEHOLDER = re.compile(r"\b(TODO|TBD|FIXME)\b|Insert text here|Tooltip:", re.I)
@@ -269,7 +269,7 @@ COMMON_MARKDOWN_MARKERS = (
     "without the repository being",
     "It does **not** establish benchmark superiority",
     "## References",
-    f"- Repository model card: https://github.com/kurtvalcorza/{REPO_NAME}/blob/main/MODEL_CARD.md",
+    f"Available: https://github.com/kurtvalcorza/{REPO_NAME}/blob/main/MODEL_CARD.md",
 )
 # Patterns that must never appear in tutorial code (comment-stripped), in any cell.
 FORBIDDEN_PATTERNS = (
