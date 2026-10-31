@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 import types
@@ -116,6 +117,94 @@ def test_an_accepted_folder_still_runs_and_a_sample_path_failure_still_raises(mo
     with pytest.raises(ValueError, match="internal sample check failed") as info:
         exec(compile(CELLS[SEC4], "<section 4>", "exec"), ns)
     assert not getattr(info.value, "dimer_refusal", False)
+
+
+# ---- the catch is narrow: only bad input is refused; an internal TypeError/OSError keeps its traceback ------------
+
+
+def _run_section4(monkeypatch, tmp_path, path, ns=None, **overrides):
+    monkeypatch.chdir(tmp_path)
+    if ns is None:
+        ns = {name: getattr(pkg, name) for name in pkg.__all__}
+        ns.update({"os": os, "Path": Path})
+    ns.update(overrides)
+    exec(compile(refusing_section4_source(path), "<section 4>", "exec"), ns)
+    return ns
+
+
+def _one_refused_line(monkeypatch, tmp_path, path, **overrides) -> str:
+    with pytest.raises(ValueError) as info:
+        _run_section4(monkeypatch, tmp_path, path, **overrides)
+    assert getattr(info.value, "dimer_refusal", False) is True, repr(info.value)
+    lines = info.value._render_traceback_()
+    assert len(lines) == 1 and lines[0].startswith("Refused: ") and "Traceback" not in lines[0], lines
+    return lines[0]
+
+
+def _folder(tmp_path, n=12):
+    folder = tmp_path / "folder"
+    records = _records(folder, n)
+    (folder / "records.jsonl").write_text("\n".join(json.dumps(r) for r in records), encoding="utf-8")
+    return folder
+
+
+def test_the_byod_catch_is_narrow_in_the_notebook_source():
+    src = CELLS[SEC4].split("write_dataset_jsonl(", 1)[0]  # the BYOD try block
+    caught = re.findall(r"^\s*except (.+?)(?: as \w+)?:$", src, flags=re.M)
+    assert not [c for c in caught if "TypeError" in c], caught
+    assert caught.count("(OSError, zipfile.BadZipFile)") == 2 and src.count("except OSError as exc:") == 1, caught
+    assert "        try:\n            records = load_byod_dataset(records_file)\n        except OSError as exc:\n" in src
+    assert "\nexcept ValueError as exc:\n    if not USE_BYOD:\n        raise" in src
+
+
+def test_a_corrupt_zip_is_still_one_refused_line(monkeypatch, tmp_path):
+    import io
+    import zipfile
+
+    monkeypatch.delitem(sys.modules, "google.colab", raising=False)
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_STORED) as archive:
+        archive.writestr("records.jsonl", "x" * 64)
+    data = bytearray(buffer.getvalue())
+    data[data.index(b"x" * 64)] = ord("y")  # the stored bytes no longer match their CRC-32
+    bad = tmp_path / "bad.zip"
+    bad.write_bytes(bytes(data))
+    line = _one_refused_line(monkeypatch, tmp_path, str(bad))
+    assert line.startswith("Refused: bad.zip: the zip cannot be read (BadZipFile: Bad CRC-32"), line
+    assert line.endswith("Fix the file, then select this cell and choose Runtime → Run after."), line
+
+
+def test_an_unreadable_records_file_is_still_one_refused_line(monkeypatch, tmp_path):
+    monkeypatch.delitem(sys.modules, "google.colab", raising=False)
+    folder = _folder(tmp_path)
+
+    def unreadable(_path):
+        raise PermissionError(13, "Permission denied", str(_path))
+
+    line = _one_refused_line(monkeypatch, tmp_path, str(folder), load_byod_dataset=unreadable)
+    assert line.startswith("Refused: folder: the file cannot be read (PermissionError: "), line
+
+
+@pytest.mark.parametrize("error", [TypeError("internal helper bug"), OSError("internal I/O bug")], ids=["TypeError", "OSError"])
+def test_an_internal_error_after_the_loader_keeps_its_traceback(monkeypatch, tmp_path, error):
+    import traceback
+
+    monkeypatch.delitem(sys.modules, "google.colab", raising=False)
+    folder = _folder(tmp_path)
+    ns = _run_section4(monkeypatch, tmp_path, str(folder))
+    earlier = ns["train_records"]
+    written = sorted((tmp_path / "outputs").glob(f"{STEM}_*"))
+    assert earlier and written
+
+    def broken_disjoint(splits):
+        raise error
+
+    with pytest.raises(type(error)) as info:
+        _run_section4(monkeypatch, tmp_path, str(folder), ns=ns, check_split_disjoint=broken_disjoint)
+    assert info.value is error and not getattr(info.value, "dimer_refusal", False)
+    rendered = "".join(traceback.format_exception(info.value))
+    assert rendered.startswith("Traceback") and "broken_disjoint" in rendered and "Refused:" not in rendered
+    assert ns["train_records"] is earlier and all(p.exists() for p in written)  # nothing is cleared for an internal error
 
 
 WORKER_SETUP = [f"import sys; sys.path.insert(0, {str(ROOT / 'src')!r})", "import os", "from pathlib import Path", "from blip_vqa_pipeline import *"]
