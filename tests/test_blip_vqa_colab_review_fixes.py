@@ -153,7 +153,7 @@ def test_subfolder_image_paths_are_kept(monkeypatch, tmp_path):
 
 def test_cancelled_upload_and_missing_records_file_are_actionable(monkeypatch, tmp_path):
     _fake_colab(monkeypatch, [{}, {"no_records.zip": _zip(tmp_path, "n", 12, records_name="")}])
-    with pytest.raises(RuntimeError, match="Upload exactly one .zip file \\(received 0\\)"):
+    with pytest.raises(ValueError, match="upload exactly one .zip file \\(received 0\\)"):
         _section4(monkeypatch, tmp_path)
     with pytest.raises(ValueError, match="No records.jsonl or records.json found in no_records.zip"):
         _section4(monkeypatch, tmp_path)
@@ -170,7 +170,7 @@ def test_byod_path_reads_a_zip_or_a_folder_without_colab(monkeypatch, tmp_path):
     (folder / "records.jsonl").write_text("\n".join(json.dumps(r) for r in records), encoding="utf-8")
     ns = _section4(monkeypatch, tmp_path, byod_path=str(folder))
     assert ns["data_source"] == "BYOD (folder)" and ns["byod"]["zip_sha256"] is None
-    with pytest.raises(FileNotFoundError, match="does not exist in this runtime"):
+    with pytest.raises(ValueError, match="does not exist in this runtime"):
         _section4(monkeypatch, tmp_path, byod_path=str(tmp_path / "missing.zip"))
 
 
