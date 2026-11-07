@@ -1,0 +1,72 @@
+{
+  "repo": "blip-vqa-pipeline",
+  "sha": "68e2ec9de783cdab653976c09dc060326171a019",
+  "notebook": "tutorials/blip_vqa_colab.ipynb",
+  "blob": "760de3a0d7a755491e28e86c3137e2b0a0bf39ba",
+  "gpu": "T4",
+  "session": "suite-blip-68e2ec9-c6b0",
+  "started_utc": "2026-11-02T15:52:04+00:00",
+  "runner": "Colab CLI `colab exec -f` on a fresh session (not a browser Run all)",
+  "overrides": [
+    {
+      "name": "USE_BYOD",
+      "from": "False",
+      "to": "True"
+    },
+    {
+      "name": "BYOD_PATH",
+      "from": "''",
+      "to": "'/content/sample_data'"
+    }
+  ],
+  "run_copy_blob": "937d6c3075716e223f7f462d18e85dd2fd687481",
+  "run_copy_sha256": "842a6af0916791b585d0cfedf0b10e4848d32aaff15c12c3f6a5d01ca35828d9",
+  "run_copy_note": "refusal run: the run copy is the committed notebook with the listed assignment overrides, cut immediately after the refusal cell and re-serialised (nbformat layout); input_unchanged compares against that copy",
+  "truncated_after_cell": "blip_vqa-17",
+  "refusal_cell_ref": "blip_vqa-17",
+  "refusal_cell_index": 8,
+  "cells_dropped": 13,
+  "code_cells_dropped": 6,
+  "original_sha256": "a3579a4fbfbdac48b59a15a868555434872d36909192b1e83d48608d95b75d71",
+  "status": "[suite-blip-68e2ec9-c6b0] gpu-t4-s-usw4b0-15cyox9c9nepb | Hardware: T4 | Shape: Standard | Variant: GPU | Status: IDLE",
+  "exec_exit_code": 0,
+  "stopped": true,
+  "stop_verified": true,
+  "wall_s": 125.8,
+  "input_unchanged": true,
+  "executed_file": "blip_vqa_colab_68e2ec9_colab-cli-t4_output.ipynb",
+  "log_cells": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "log_total": 8,
+  "code_cells": 8,
+  "executed_cells": 5,
+  "errors": [
+    {
+      "cell": "blip_vqa-17",
+      "ename": "IsolatedCellRefusal",
+      "evalue": "sample_data: No records.jsonl or records.json found in /content/sample_data. Put one records file of {id, image, question, answers} objects beside the images (image paths relative to it), then run this cell again. Fix the file, then select this cell and choose Runtime \u2192 Run after."
+    }
+  ],
+  "execution_counts": [],
+  "sequential": null,
+  "executed_sha256": "fdec7eea7d4f42bb34cf2151184aa2c9171fc0007bc53dc57522d76fb6bbfadf",
+  "log_sequential_complete": true,
+  "mode": "expect_refusal",
+  "refusal_line": "Refused: sample_data: No records.jsonl or records.json found in /content/sample_data. Put one records file of {id, image, question, answers} objects beside the images (image paths relative to it), then run this cell again. Fix the file, then select this cell and choose Runtime \u2192 Run after.",
+  "halting_cell_index": 8,
+  "halting_cell_id": "blip_vqa-17",
+  "error_cells": [
+    8
+  ],
+  "refusal_fail_reasons": [],
+  "refusal_ok": true,
+  "verdict": "PASS"
+}
